@@ -80,9 +80,8 @@ function! s:Tabbing()
     endif
 endfunction
 
-function! s:Enable()
+function! s:EnableMathShortcuts()
     setlocal notimeout
-    inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
     imap <buffer> <expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
 
     let mapping = {
@@ -107,4 +106,15 @@ function! s:Enable()
     endfor
 endfunction
 
-call s:Enable()
+" =========================================================================
+
+inoremap <buffer><silent> <F1>
+    \ \begin{equation}<CR>\end{equation}<Esc>k0
+inoremap <buffer><silent> <F2>
+    \ \begin{equation}<CR>\begin{aligned}<CR>\end{aligned}<CR>\end{equation}<Esc>2k0
+inoremap <buffer><silent> <F3>
+    \ \begin{align}<CR>\end{align}<Esc>k0
+
+inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
+
+call s:EnableMathShortcuts()
