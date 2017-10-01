@@ -7,6 +7,12 @@ let s:leader_shortcuts = {
     \ '/': '\frac{}{}<Esc>F}i',
     \ }
 
+let s:insert_shortcuts = {
+    \ 'b': '<Left>\mathbf{<Right>}',
+    \ }
+
+" =========================================================================
+
 function! s:InMathInline()
     let prefix = strpart(getline('.'), 0, col('.') - 1)
     return count(prefix, '$') % 2
@@ -127,11 +133,13 @@ endfunction
 
 " enable shortcuts prefixed by <Insert>
 function! s:EnableInsertShortcuts()
+    imap <buffer><expr> <Insert> <SID>InMath() ? '<Plug>I' : '<Insert>'
 
-    " send a true <Insert> when InMath
-    " '<Esc> i' must have a space in it: somehow <expr> mode converts '<Esc>i' into é
-    imap <buffer><expr> <Insert> <SID>InMath() ? '<Insert>' :
-        \ (mode() == "i") ? '<Esc>R<Right>' : '<Esc> i'
+    let mapping = s:insert_shortcuts
+    for key in keys(mapping)
+        let cmd = 'inoremap <buffer> <Plug>I%s %s'
+        exe printf(cmd, key, mapping[key])
+    endfor
 
 endfunction
 
