@@ -105,6 +105,25 @@ function! s:BracedScript(key)
     return a:key
 endfunction
 
+" insert () [] {} \{\} in pairs
+function! s:Pair(l, r)
+    if s:InMath()
+        let line = getline('.')
+        let column = col('.') - 1
+
+        if column >= 1 && strpart(line, column - 1, 2) == a:l . a:r
+            return "\<Del>"
+        elseif a:l == '{' && column >= 2 && strpart(line, column - 2, 4) == '\{\}'
+            return "\<Del>\<Del>"
+        elseif a:l == '{' && column >= 1 && line[column - 1] == '\'
+            return '{\}'."\<Left>\<Left>"
+        else
+            return a:l.a:r."\<Left>"
+        endif
+    endif
+    return a:l
+endfunction
+
 " enable shortcuts prefixed by <LocalLeader>
 function! s:EnableMathShortcuts()
     setlocal notimeout
@@ -147,5 +166,8 @@ inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
 inoremap <buffer><silent> . <C-R>=<SID>Dots()<CR>
 inoremap <buffer><silent> _ <C-R>=<SID>BracedScript('_')<CR>
 inoremap <buffer><silent> ^ <C-R>=<SID>BracedScript('^')<CR>
+inoremap <buffer><silent> ( <C-R>=<SID>Pair('(',')')<CR>
+inoremap <buffer><silent> [ <C-R>=<SID>Pair('[',']')<CR>
+inoremap <buffer><silent> { <C-R>=<SID>Pair('{','}')<CR>
 
 call s:EnableMathShortcuts()
