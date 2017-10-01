@@ -1,4 +1,5 @@
 let maplocalleader = '`'
+let b:actualleader = '∮'
 
 function! s:InMathInline()
     let prefix = strpart(getline('.'), 0, col('.') - 1)
@@ -49,9 +50,11 @@ function! s:EnableMathShortcuts()
 
     for entry in maps
         " <expr>: https://vi.stackexchange.com/a/8817
-        let cmd = 'inoremap <buffer> <expr> <LocalLeader>%s <SID>InsertShortcut(''%s'', ''%s'')'
-        exe printf(cmd, entry[0], entry[0], entry[1])
+        let cmd = 'inoremap <buffer> <expr> %s%s <SID>InsertShortcut(''%s'', ''%s'')'
+        exe printf(cmd, b:actualleader, entry[0], entry[0], entry[1])
     endfor
 endfunction
+
+imap <buffer> <expr> <LocalLeader> <SID>InMathBlock() ? b:actualleader : g:maplocalleader
 
 call s:EnableMathShortcuts()
