@@ -77,8 +77,20 @@ let s:leader_shortcuts = {
 " =========================================================================
 
 function! s:InMathInline()
-    let prefix = strpart(getline('.'), 0, col('.') - 1)
-    return count(prefix, '$') % 2
+    let line = getline('.')
+    let prefix = strpart(line, 0, col('.') - 1)
+    let ct = count(prefix, '$')
+
+    " assumptions:
+    " 1. $...$ expands at most two lines
+    " 2. double-line $...$ pairs are not line-wise adjacent / overlapping
+    if count(line, '$') % 2 != 0
+        let lnum = line('.')
+        if lnum >= 1
+            let ct += count(getline(lnum - 1), '$')
+        endif
+    endif
+    return ct % 2
 endfunction
 
 function! s:InMathBlock()
