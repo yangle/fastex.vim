@@ -46,13 +46,12 @@ endfunction
 " smart tabbing inside TeX expressions
 " adapted from https://github.com/vim-scripts/auctex.vim
 function! s:Tabbing()
-    let column = col('.') - 1
-    let suffix = strpart(getline('.'), col('.') - 1)
-
     let in_math_inline = s:InMathInline()
     let in_math_block = s:InMathBlock()
 
     if in_math_inline || in_math_block
+        let suffix = strpart(getline('.'), col('.') - 1)
+
         if suffix[0] =~ ')\|]\||'
             return "\<Right>"
         elseif suffix =~ '^\\}\|\\|'
@@ -72,24 +71,22 @@ function! s:Tabbing()
                 return "\<Tab>"
             endif
         endif
-    else
-        if suffix[0] =~ ')\|]\|}'
-            return "\<Right>"
-        else
-            return "\<Tab>"
-        endif
     endif
+
+    return "\<Tab>"
 endfunction
 
 " convert triple dots into \ldots or \cdots
 function! s:Dots()
-    let line = getline('.')
-    let column = col('.') - 1
-    if s:InMath() && column >= 2 && line[column - 1] == '.' && line[column - 2] == '.'
-        if column >= 3 && line[column - 3] == ','
-            return "\<BS>\<BS>\\ldots"
-        else
-            return "\<BS>\<BS>\\cdots"
+    if s:InMath()
+        let line = getline('.')
+        let column = col('.') - 1
+        if column >= 2 && line[column - 1] == '.' && line[column - 2] == '.'
+            if column >= 3 && line[column - 3] == ','
+                return "\<BS>\<BS>\\ldots"
+            else
+                return "\<BS>\<BS>\\cdots"
+            endif
         endif
     endif
 
@@ -98,10 +95,13 @@ endfunction
 
 " convert __ to _{} and ^^ to ^{}
 function! s:BracedScript(key)
-    let column = col('.') - 1
-    if s:InMath() && column >= 1 && getline('.')[column - 1] == a:key
-        return "{}\<Left>"
+    if s:InMath()
+        let column = col('.') - 1
+        if column >= 1 && getline('.')[column - 1] == a:key
+            return "{}\<Left>"
+        endif
     endif
+
     return a:key
 endfunction
 
@@ -121,6 +121,7 @@ function! s:Pair(l, r)
             return a:l.a:r."\<Left>"
         endif
     endif
+
     return a:l
 endfunction
 
