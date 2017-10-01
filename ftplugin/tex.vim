@@ -1,5 +1,3 @@
-let maplocalleader = '`'
-
 let s:leader_shortcuts = {
     \ 'a': '\alpha',
     \ 'b': '\beta',
@@ -76,6 +74,7 @@ let s:leader_shortcuts = {
 
 " =========================================================================
 
+" determine whether the cursor is inside $...$
 function! s:InMathInline()
     let line = getline('.')
     let prefix = strpart(line, 0, col('.') - 1)
@@ -93,6 +92,7 @@ function! s:InMathInline()
     return ct % 2
 endfunction
 
+" determine whether the cursor is inside a \begin{xyz}...\end{xyz} math block
 function! s:InMathBlock()
     let prior = strpart(getline('.'), 0, col('.') - 1)
     let blocks = '{\(equation\|eqnarray\|multline\|gather\|align\|flalign\|alignat\)\*\=}'
@@ -258,6 +258,8 @@ endfunction
 
 setlocal notimeout
 
+let maplocalleader = '`'
+
 " common math environments
 inoremap <buffer><silent> <F1>
     \ \begin{equation}<CR>\end{equation}<Esc>k0
@@ -288,3 +290,9 @@ inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
 inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
 inoremap <buffer> <Insert>s \sqrt{}<Left>
 inoremap <buffer> <Insert>t \text{}<Left>
+
+" do not load default plugin or indent files for TeX
+" see :help :filetype-overview
+if &ft == 'tex'
+    filetype plugin indent off
+endif
