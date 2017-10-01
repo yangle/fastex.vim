@@ -96,6 +96,15 @@ function! s:Dots()
     return '.'
 endfunction
 
+" convert __ to _{} and ^^ to ^{}
+function! s:BracedScript(key)
+    let column = col('.') - 1
+    if s:InMath() && column >= 1 && getline('.')[column - 1] == a:key
+        return "{}\<Left>"
+    endif
+    return a:key
+endfunction
+
 " enable shortcuts prefixed by <LocalLeader>
 function! s:EnableMathShortcuts()
     setlocal notimeout
@@ -135,7 +144,8 @@ inoremap <buffer><silent> <F3>
 
 inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
 
-" <Space><BS>: https://vi.stackexchange.com/a/3614
-inoremap <buffer><silent> . <Space><BS><C-R>=<SID>Dots()<CR>
+inoremap <buffer><silent> . <C-R>=<SID>Dots()<CR>
+inoremap <buffer><silent> _ <C-R>=<SID>BracedScript('_')<CR>
+inoremap <buffer><silent> ^ <C-R>=<SID>BracedScript('^')<CR>
 
 call s:EnableMathShortcuts()
