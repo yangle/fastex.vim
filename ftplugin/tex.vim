@@ -129,10 +129,9 @@ endfunction
 function! s:Tabbing()
     let in_math_inline = s:InMathInline()
     let in_math_block = s:InMathBlock()
+    let suffix = strpart(getline('.'), col('.') - 1)
 
     if in_math_inline || in_math_block
-        let suffix = strpart(getline('.'), col('.') - 1)
-
         if suffix[0] =~ ')\|]\||'
             return "\<Right>"
         elseif suffix =~ '^\\}\|\\|'
@@ -151,6 +150,12 @@ function! s:Tabbing()
             else
                 return "\<Tab>"
             endif
+        endif
+    else
+        if suffix[0] =~ ')\|]\|}'
+            return "\<Right>"
+        else
+            return "\<Tab>"
         endif
     endif
 
@@ -261,8 +266,6 @@ inoremap <buffer><silent> <F2>
 inoremap <buffer><silent> <F3>
     \ \begin{align}<CR>\end{align}<Esc>k0
 
-inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
-
 inoremap <buffer><silent> . <C-R>=<SID>Dots()<CR>
 inoremap <buffer><silent> _ <C-R>=<SID>BracedScript('_')<CR>
 inoremap <buffer><silent> ^ <C-R>=<SID>BracedScript('^')<CR>
@@ -273,6 +276,7 @@ inoremap <buffer><silent> { <C-R>=<SID>Pair('{', '}')<CR>
 call s:EnableLeaderShortcuts()
 
 " the following mappings are not limited to math mode
+inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
 inoremap <buffer><silent> $ <C-R>=<SID>Dollar()<CR>
 inoremap <buffer><silent> { <C-R>=<SID>Pair('{', '}', 0)<CR>
 
