@@ -7,10 +7,6 @@ let s:leader_shortcuts = {
     \ '/': '\frac{}{}<Esc>F}i',
     \ }
 
-let s:insert_shortcuts = {
-    \ 'b': '<Left>\mathbf{<Right>}',
-    \ }
-
 " =========================================================================
 
 function! s:InMathInline()
@@ -131,18 +127,6 @@ function! s:Pair(l, r)
     return a:l
 endfunction
 
-" enable shortcuts prefixed by <Insert>
-function! s:EnableInsertShortcuts()
-    imap <buffer><expr> <Insert> <SID>InMath() ? '<Plug>I' : '<Insert>'
-
-    let mapping = s:insert_shortcuts
-    for key in keys(mapping)
-        let cmd = 'inoremap <buffer> <Plug>I%s %s'
-        exe printf(cmd, key, mapping[key])
-    endfor
-
-endfunction
-
 " enable shortcuts prefixed by <LocalLeader>
 function! s:EnableLeaderShortcuts()
     setlocal notimeout
@@ -189,12 +173,12 @@ inoremap <buffer><silent> ( <C-R>=<SID>Pair('(',')')<CR>
 inoremap <buffer><silent> [ <C-R>=<SID>Pair('[',']')<CR>
 inoremap <buffer><silent> { <C-R>=<SID>Pair('{','}')<CR>
 
-"inoremap <buffer> <Insert>b <Left>\mathbf{<Right>}
-"inoremap <buffer> <Insert>B <Left>\mathbb{<Right>}
-"inoremap <buffer> <Insert>r <Left>\mathrm{<Right>}
-"inoremap <buffer> <Insert>s <Left>\mathsf{<Right>}
-"inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
-"inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
+" these mappings are (unfortunately) not limited to math mode
+inoremap <buffer> <Insert>b <Left>\mathbf{<Right>}
+inoremap <buffer> <Insert>B <Left>\mathbb{<Right>}
+inoremap <buffer> <Insert>r <Left>\mathrm{<Right>}
+inoremap <buffer> <Insert>s <Left>\mathsf{<Right>}
+inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
+inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
 
 call s:EnableLeaderShortcuts()
-call s:EnableInsertShortcuts()
