@@ -129,7 +129,6 @@ endfunction
 
 " enable shortcuts prefixed by <LocalLeader>
 function! s:EnableLeaderShortcuts()
-    setlocal notimeout
     imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
 
     let mapping = {
@@ -156,6 +155,8 @@ endfunction
 
 " =========================================================================
 
+setlocal notimeout
+
 " common math environments
 inoremap <buffer><silent> <F1>
     \ \begin{equation}<CR>\end{equation}<Esc>k0
@@ -180,5 +181,7 @@ inoremap <buffer> <Insert>r <Left>\mathrm{<Right>}
 inoremap <buffer> <Insert>s <Left>\mathsf{<Right>}
 inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
 inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
+inoremap <buffer> <Insert>s \sqrt{}<Left>
+inoremap <buffer> <Insert>t \text{}<Left>
 
 call s:EnableLeaderShortcuts()
