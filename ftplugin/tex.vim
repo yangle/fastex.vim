@@ -1,6 +1,12 @@
 let maplocalleader = '`'
 let b:actualleader = '∮'
 
+let s:shortcuts = {
+    \ 'a': '\alpha',
+    \ 'b': '\beta',
+    \ '/': '\frac{}{}<Esc>F}i',
+    \ }
+
 function! s:InMathInline()
     let prefix = strpart(getline('.'), 0, col('.') - 1)
     return count(prefix, '$') % 2
@@ -10,6 +16,8 @@ function! s:InMathBlock()
     let prior = strpart(getline('.'), 0, col('.') - 1)
     let blocks = '{\(equation\|eqnarray\|multline\|gather\|align\|flalign\|alignat\)\*\=}'
     let boundaries = '\\begin'.blocks.'\|\\end'.blocks.'\|\\\]\|\\\['
+
+    " Note: $$...$$ is not supported!
 
     " find the nearest prior of boundaries
     if prior !~# boundaries
@@ -31,9 +39,13 @@ function! s:InMathBlock()
     return prior =~# '\\begin\('.blocks.'\)\(.\{-}\\end\1\)\@!'
 endfunction
 
+function! s:InMath()
+    return s:InMathInline() || s:InMathBlock()
+endfunction
+
 function! s:EnableMathShortcuts()
     setlocal notimeout
-    imap <buffer> <expr> <LocalLeader> <SID>InMathBlock() ? b:actualleader : g:maplocalleader
+    imap <buffer> <expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
 
     let mapping = {
         \ '<Space>': g:maplocalleader."<Space>",
@@ -48,12 +60,7 @@ function! s:EnableMathShortcuts()
         let mapping[char] = g:maplocalleader.char
     endfor
 
-    let shortcuts = {
-        \ 'a': '\alpha',
-        \ 'b': '\beta',
-        \ '/': '\frac{}{}<Esc>F}i',
-        \ }
-    call extend(mapping, shortcuts)
+    call extend(mapping, s:shortcuts)
 
     for key in keys(mapping)
         " <expr>: https://vi.stackexchange.com/a/8817
