@@ -43,6 +43,7 @@ function! s:InMath()
     return s:InMathInline() || s:InMathBlock()
 endfunction
 
+" smart tabbing inside TeX expressions
 " adapted from https://github.com/vim-scripts/auctex.vim
 function! s:Tabbing()
     let column = col('.') - 1
@@ -80,6 +81,22 @@ function! s:Tabbing()
     endif
 endfunction
 
+" convert triple dots into \ldots or \cdots
+function! s:Dots()
+    let line = getline('.')
+    let column = col('.') - 1
+    if s:InMath() && column >= 2 && line[column - 1] == '.' && line[column - 2] == '.'
+        if column >= 3 && line[column - 3] == ','
+            return "\<BS>\<BS>\\ldots"
+        else
+            return "\<BS>\<BS>\\cdots"
+        endif
+    endif
+
+    return '.'
+endfunction
+
+" enable shortcuts prefixed by <LocalLeader>
 function! s:EnableMathShortcuts()
     setlocal notimeout
     imap <buffer> <expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
@@ -108,6 +125,7 @@ endfunction
 
 " =========================================================================
 
+" common math environments
 inoremap <buffer><silent> <F1>
     \ \begin{equation}<CR>\end{equation}<Esc>k0
 inoremap <buffer><silent> <F2>
@@ -116,5 +134,8 @@ inoremap <buffer><silent> <F3>
     \ \begin{align}<CR>\end{align}<Esc>k0
 
 inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
+
+" <Space><BS>: https://vi.stackexchange.com/a/3614
+inoremap <buffer><silent> . <Space><BS><C-R>=<SID>Dots()<CR>
 
 call s:EnableMathShortcuts()
