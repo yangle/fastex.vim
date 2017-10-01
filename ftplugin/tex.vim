@@ -1,7 +1,7 @@
 let maplocalleader = '`'
 let b:actualleader = '∮'
 
-let s:shortcuts = {
+let s:leader_shortcuts = {
     \ 'a': '\alpha',
     \ 'b': '\beta',
     \ '/': '\frac{}{}<Esc>F}i',
@@ -125,10 +125,20 @@ function! s:Pair(l, r)
     return a:l
 endfunction
 
+" enable shortcuts prefixed by <Insert>
+function! s:EnableInsertShortcuts()
+
+    " send a true <Insert> when InMath
+    " '<Esc> i' must have a space in it: somehow <expr> mode converts '<Esc>i' into é
+    imap <buffer><expr> <Insert> <SID>InMath() ? '<Insert>' :
+        \ (mode() == "i") ? '<Esc>R<Right>' : '<Esc> i'
+
+endfunction
+
 " enable shortcuts prefixed by <LocalLeader>
-function! s:EnableMathShortcuts()
+function! s:EnableLeaderShortcuts()
     setlocal notimeout
-    imap <buffer> <expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
+    imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
 
     let mapping = {
         \ '<Space>': g:maplocalleader."<Space>",
@@ -143,11 +153,11 @@ function! s:EnableMathShortcuts()
         let mapping[char] = g:maplocalleader.char
     endfor
 
-    call extend(mapping, s:shortcuts)
+    call extend(mapping, s:leader_shortcuts)
 
     for key in keys(mapping)
         " <expr>: https://vi.stackexchange.com/a/8817
-        let cmd = 'inoremap <buffer> <expr> %s%s ''%s'''
+        let cmd = 'inoremap <buffer><expr> %s%s ''%s'''
         exe printf(cmd, b:actualleader, key, mapping[key])
     endfor
 endfunction
@@ -171,4 +181,12 @@ inoremap <buffer><silent> ( <C-R>=<SID>Pair('(',')')<CR>
 inoremap <buffer><silent> [ <C-R>=<SID>Pair('[',']')<CR>
 inoremap <buffer><silent> { <C-R>=<SID>Pair('{','}')<CR>
 
-call s:EnableMathShortcuts()
+"inoremap <buffer> <Insert>b <Left>\mathbf{<Right>}
+"inoremap <buffer> <Insert>B <Left>\mathbb{<Right>}
+"inoremap <buffer> <Insert>r <Left>\mathrm{<Right>}
+"inoremap <buffer> <Insert>s <Left>\mathsf{<Right>}
+"inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
+"inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
+
+call s:EnableLeaderShortcuts()
+call s:EnableInsertShortcuts()
