@@ -194,6 +194,17 @@ function! s:Pair(l, r)
     return a:l
 endfunction
 
+" insert $ in pairs -- not limited to math mode!
+function! s:Dollar()
+    let line = getline('.')
+    let column = col('.') - 1
+    if column >= 1 && strpart(line, column - 1, 2) == '$$'
+        return "\<Del>\<Left>\\\<Right>"
+    else
+        return "$$\<Left>"
+    endif
+endfunction
+
 " enable shortcuts prefixed by <LocalLeader>
 
 function! s:EnableLeaderShortcuts()
@@ -245,7 +256,11 @@ inoremap <buffer><silent> ( <C-R>=<SID>Pair('(',')')<CR>
 inoremap <buffer><silent> [ <C-R>=<SID>Pair('[',']')<CR>
 inoremap <buffer><silent> { <C-R>=<SID>Pair('{','}')<CR>
 
-" these mappings are (unfortunately) not limited to math mode
+call s:EnableLeaderShortcuts()
+
+" the following mappings are not limited to math mode
+inoremap <buffer><silent> $ <C-R>=<SID>Dollar()<CR>
+
 inoremap <buffer> <Insert>b <Left>\mathbf{<Right>}
 inoremap <buffer> <Insert>B <Left>\mathbb{<Right>}
 inoremap <buffer> <Insert>r <Left>\mathrm{<Right>}
@@ -254,5 +269,3 @@ inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
 inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
 inoremap <buffer> <Insert>s \sqrt{}<Left>
 inoremap <buffer> <Insert>t \text{}<Left>
-
-call s:EnableLeaderShortcuts()
