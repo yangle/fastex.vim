@@ -175,8 +175,10 @@ function! s:BracedScript(key)
 endfunction
 
 " insert () [] {} \{\} in pairs
-function! s:Pair(l, r)
-    if s:InMath()
+function! s:Pair(l, r, ...)
+    let math_only = (a:0 >= 1) ? a:1 : 1
+
+    if !math_only || s:InMath()
         let line = getline('.')
         let column = col('.') - 1
 
@@ -252,14 +254,15 @@ inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
 inoremap <buffer><silent> . <C-R>=<SID>Dots()<CR>
 inoremap <buffer><silent> _ <C-R>=<SID>BracedScript('_')<CR>
 inoremap <buffer><silent> ^ <C-R>=<SID>BracedScript('^')<CR>
-inoremap <buffer><silent> ( <C-R>=<SID>Pair('(',')')<CR>
-inoremap <buffer><silent> [ <C-R>=<SID>Pair('[',']')<CR>
-inoremap <buffer><silent> { <C-R>=<SID>Pair('{','}')<CR>
+inoremap <buffer><silent> ( <C-R>=<SID>Pair('(', ')')<CR>
+inoremap <buffer><silent> [ <C-R>=<SID>Pair('[', ']')<CR>
+inoremap <buffer><silent> { <C-R>=<SID>Pair('{', '}')<CR>
 
 call s:EnableLeaderShortcuts()
 
 " the following mappings are not limited to math mode
 inoremap <buffer><silent> $ <C-R>=<SID>Dollar()<CR>
+inoremap <buffer><silent> { <C-R>=<SID>Pair('{', '}', 0)<CR>
 
 inoremap <buffer> <Insert>b <Left>\mathbf{<Right>}
 inoremap <buffer> <Insert>B <Left>\mathbb{<Right>}
