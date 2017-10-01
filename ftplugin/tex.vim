@@ -43,8 +43,46 @@ function! s:InMath()
     return s:InMathInline() || s:InMathBlock()
 endfunction
 
-function! s:EnableMathShortcuts()
+" adapted from https://github.com/vim-scripts/auctex.vim
+function! s:Tabbing()
+    let column = col('.') - 1
+    let suffix = strpart(getline('.'), col('.') - 1)
+
+    let in_math_inline = s:InMathInline()
+    let in_math_block = s:InMathBlock()
+
+    if in_math_inline || in_math_block
+        if suffix[0] =~ ')\|]\||'
+            return "\<Right>"
+        elseif suffix =~ '^\\}\|\\|'
+            return "\<Right>\<Right>"
+        elseif suffix =~# '^\\right\\'
+            return "\<Esc>8la"
+        elseif suffix =~# '^\\right'
+            return "\<Esc>7la"
+        elseif suffix =~ '^}\(\^\|_\|\){'
+            return "\<Esc>f{a"
+        elseif suffix[0] == '}'
+            return "\<Right>"
+        else
+            if in_math_inline
+                return "\<Esc>f$a"
+            else
+                return "\<Tab>"
+            endif
+        endif
+    else
+        if suffix[0] =~ ')\|]\|}'
+            return "\<Right>"
+        else
+            return "\<Tab>"
+        endif
+    endif
+endfunction
+
+function! s:Enable()
     setlocal notimeout
+    inoremap <buffer><silent> <Tab> <C-R>=<SID>Tabbing()<CR>
     imap <buffer> <expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
 
     let mapping = {
@@ -69,4 +107,4 @@ function! s:EnableMathShortcuts()
     endfor
 endfunction
 
-call s:EnableMathShortcuts()
+call s:Enable()
