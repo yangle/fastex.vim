@@ -1,5 +1,4 @@
 let maplocalleader = '`'
-let b:actualleader = '∮'
 
 let s:leader_shortcuts = {
     \ 'a': '\alpha',
@@ -128,8 +127,12 @@ function! s:Pair(l, r)
 endfunction
 
 " enable shortcuts prefixed by <LocalLeader>
+
 function! s:EnableLeaderShortcuts()
-    imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:actualleader : g:maplocalleader
+    " b:plug is just like <Plug>, but only a single char if inserted verbatim
+    " (note: we cannot use a s:* or local variable on the RHS of map-<expr>)
+    let b:plug = '∮'
+    imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:plug : g:maplocalleader
 
     let mapping = {
         \ '<Space>': g:maplocalleader."<Space>",
@@ -149,7 +152,7 @@ function! s:EnableLeaderShortcuts()
     for key in keys(mapping)
         " <expr>: https://vi.stackexchange.com/a/8817
         let cmd = 'inoremap <buffer><expr> %s%s ''%s'''
-        exe printf(cmd, b:actualleader, key, mapping[key])
+        exe printf(cmd, b:plug, key, mapping[key])
     endfor
 endfunction
 
