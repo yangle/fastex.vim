@@ -74,19 +74,25 @@ let s:leader_shortcuts = {
 
 " =========================================================================
 
+" backport count() to seach for a *single* character in a string
+function! s:count(str, char)
+    " str to list of chars: https://stackoverflow.com/a/17692652
+    return count(split(a:str, '\zs'), a:char)
+endfunction
+
 " determine whether the cursor is inside $...$
 function! s:InMathInline()
     let line = getline('.')
     let prefix = strpart(line, 0, col('.') - 1)
-    let ct = count(prefix, '$')
+    let ct = s:count(prefix, '$')
 
     " assumptions:
     " 1. $...$ expands at most two lines
     " 2. double-line $...$ pairs are not line-wise adjacent / overlapping
-    if count(line, '$') % 2 != 0
+    if s:count(line, '$') % 2 != 0
         let lnum = line('.')
         if lnum >= 1
-            let ct += count(getline(lnum - 1), '$')
+            let ct += s:count(getline(lnum - 1), '$')
         endif
     endif
     return ct % 2
