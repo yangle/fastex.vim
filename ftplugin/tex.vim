@@ -160,6 +160,8 @@ function! s:Tabbing()
     else
         if suffix[0] =~ ')\|]\|}'
             return "\<Right>"
+        elseif &ft == 'markdown' && suffix[0] == '`'
+            return "\<Right>"
         else
             return "\<Tab>"
         endif
