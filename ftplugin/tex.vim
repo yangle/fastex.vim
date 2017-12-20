@@ -233,10 +233,15 @@ endfunction
 " enable shortcuts prefixed by <LocalLeader>
 
 function! s:EnableLeaderShortcuts()
-    " b:plug is just like <Plug>, but only a single char if inserted verbatim
+    " Insert a pair of backticks in markdown. The indirection through ⊚ makes
+    " it possible to use a non-recursive map to avoid mapping ` back to ``.
+    let b:tplug = '⊚'
+    inoremap <buffer><expr> ⊚ (&ft == 'markdown') ? '``'."\<Left>" : '`'
+
+    " b:mplug is just like <Plug>, but only a single char if inserted verbatim
     " (note: we cannot use a s:* or local variable on the RHS of map-<expr>)
-    let b:plug = '∮'
-    imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:plug : g:maplocalleader
+    let b:mplug = '∮'
+    imap <buffer><expr> <LocalLeader> <SID>InMath() ? b:mplug : b:tplug
 
     let mapping = {
         \ '<Space>': g:maplocalleader."<Space>",
@@ -256,7 +261,7 @@ function! s:EnableLeaderShortcuts()
     for key in keys(mapping)
         " <expr>: https://vi.stackexchange.com/a/8817
         let cmd = 'inoremap <buffer><expr> %s%s ''%s'''
-        exe printf(cmd, b:plug, key, mapping[key])
+        exe printf(cmd, b:mplug, key, mapping[key])
     endfor
 endfunction
 
