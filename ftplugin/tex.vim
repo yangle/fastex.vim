@@ -303,6 +303,7 @@ inoremap <buffer> <Insert>f <Left>\mathfrak{<Right>}
 inoremap <buffer> <Insert>c <Left>\mathcal{<Right>}
 inoremap <buffer> <Insert>s \sqrt{}<Left>
 inoremap <buffer> <Insert>t \text{}<Left>
+inoremap <buffer> <Insert>T \textit{}<Left>
 
 " do not load default plugin or indent files for TeX
 " see :help :filetype-overview
