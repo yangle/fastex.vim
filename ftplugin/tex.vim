@@ -233,12 +233,11 @@ function! s:Dollar()
 endfunction
 
 " enable shortcuts prefixed by <LocalLeader>
-
 function! s:EnableLeaderShortcuts()
     " Insert a pair of backticks in markdown. The indirection through ⊚ makes
     " it possible to use a non-recursive map to avoid mapping ` back to ``.
     let b:tplug = '⊚'
-    inoremap <buffer><expr> ⊚ (&ft == 'markdown') ? '``'."\<Left>" : '`'
+    inoremap <buffer><expr> ⊚ <SID>Backtick()
 
     " b:mplug is just like <Plug>, but only a single char if inserted verbatim
     " (note: we cannot use a s:* or local variable on the RHS of map-<expr>)
@@ -265,6 +264,17 @@ function! s:EnableLeaderShortcuts()
         let cmd = 'inoremap <buffer><expr> %s%s ''%s'''
         exe printf(cmd, b:mplug, key, mapping[key])
     endfor
+endfunction
+
+" insert paired backticks or a fenced block
+function! s:Backtick()
+    if (&ft != 'markdown')
+        return '`'
+    elseif col('.') >= 2 && strpart(getline('.'), col('.') - 2) =~ '^``$'
+        return '``'."\<CR>".'``'."\<Up>\<End>"
+    else
+        return '``'."\<Left>"
+    endif
 endfunction
 
 " =========================================================================
