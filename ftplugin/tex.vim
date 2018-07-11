@@ -315,7 +315,7 @@ inoremap <buffer> <Insert>s \sqrt{}<Left>
 inoremap <buffer> <Insert>t \text{}<Left>
 inoremap <buffer> <Insert>R \textit{}<Left>
 inoremap <buffer> <Insert>T \texttt{}<Left>
-inoremap <buffer> <Insert>v \verb\|\|<Left>
+inoremap <buffer> <Insert>v \vb{}<Left>
 
 " do not load default plugin or indent files for TeX
 " see :help :filetype-overview
